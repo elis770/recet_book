@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:recet_book/models/recipe.dart';
 import 'package:recet_book/config/app_colors.dart';
+import 'package:recet_book/services/recipe_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +13,7 @@ class HomeScreen extends StatefulWidget {
 //useEffect = ciclo de vida del componente
 class _HomeScreenState extends State<HomeScreen> {
   late Future<List<Recipe>> _recipes;
+  final RecipeService _recipeService = RecipeService();
 
   @override
   void initState() {
@@ -21,10 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<List<Recipe>> _loadRecipes() async {
-    final jsonString =
-        await DefaultAssetBundle.of(context).loadString('recipes.json');
-    final jsonData = json.decode(jsonString) as List;
-    return jsonData.map((item) => Recipe.fromJson(item)).toList();
+    return _recipeService.getArgentinianRecipes();
   }
 
   @override
@@ -43,12 +41,23 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           final recipes = snapshot.data!;
-          return ListView.builder(
-            itemCount: recipes.length,
-            itemBuilder: (context, index) {
-              return _RecipesCard(context, recipes[index]);
-            },
-          );
+          
+          // Activar scroll si hay más de 4 recetas
+          if (recipes.length > 4) {
+            return ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: recipes.length,
+              itemBuilder: (context, index) {
+                return _RecipesCard(context, recipes[index]);
+              },
+            );
+          } else {
+            return ListView(
+              children: recipes
+                  .map((recipe) => _RecipesCard(context, recipe))
+                  .toList(),
+            );
+          }
         },
       ),
     );

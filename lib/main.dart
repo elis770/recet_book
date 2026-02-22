@@ -29,7 +29,7 @@ class RecipeBook extends StatelessWidget {
           centerTitle: true,
           backgroundColor: AppColors.primary,
           title: const Text(
-            'Libro de Recetas',
+            'Recetas 100% Argentinas',
             style: TextStyle(color: AppColors.white),
           ),
           bottom: TabBar(
