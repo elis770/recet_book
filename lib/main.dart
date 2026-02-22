@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recet_book/screen/home_screen.dart';
+import 'package:recet_book/config/app_colors.dart';
 
 void main() => runApp(const MyApp());
 
@@ -22,22 +23,26 @@ class RecipeBook extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.purple,
+          centerTitle: true,
+          backgroundColor: AppColors.primary,
           title: const Text(
             'Libro de Recetas',
-            style: TextStyle(color: Colors.orange),
+            style: TextStyle(color: AppColors.white),
           ),
-          bottom: const TabBar(
-            indicatorColor: Colors.red,
-            labelColor: Colors.orange,
-            unselectedLabelColor: Colors.white,
-            tabs: [Tab(icon: Icon(Icons.home), text: 'Home')],
+          bottom: TabBar(
+            indicatorColor: AppColors.secondary,
+            labelColor: AppColors.secondary,
+            unselectedLabelColor: AppColors.white,
+            tabs: const [
+              Tab(icon: Icon(Icons.home), text: 'Home'),
+              Tab(icon: Icon(Icons.favorite), text: 'Favorites'),
+            ],
           ),
         ),
-        body: const TabBarView(children: [HomeScreen()]),
+        body: TabBarView(children: [HomeScreen(), Center(child: Text('Favorites'))]),
       ),
     );
   }

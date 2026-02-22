@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "nombre": "Tortilla de Patatas",
+    "creadora": "Manuela Castañera",
+    "imagen": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400"
+  },
+  {
+    "id": 2,
+    "nombre": "Paella Valenciana",
+    "creadora": "Carmen García",
+    "imagen": "https://images.unsplash.com/photo-1476124369162-f86f7f1195c2?w=400"
+  },
+  {
+    "id": 3,
+    "nombre": "Gazpacho Andaluz",
+    "creadora": "Rosa Martínez",
+    "imagen": "https://images.unsplash.com/photo-1547069996-ffdbde797b5e?w=400"
+  },
+  {
+    "id": 4,
+    "nombre": "Arroz con Leche",
+    "creadora": "Manuela Castañera",
+    "imagen": "https://images.unsplash.com/photo-1547069996-ffdbde797b5e?w=400"
+  },
+  {
+    "id": 5,
+    "nombre": "Tarta de Santiago",
+    "creadora": "Carmen García",
+    "imagen": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400"
+  },
+  {
+    "id": 6,
+    "nombre": "Pulpo a la Gallega",
+    "creadora": "Rosa Martínez",
+    "imagen": "https://images.unsplash.com/photo-1476124369162-f86f7f1195c2?w=400"
+  }
+]
