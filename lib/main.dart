@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:recet_book/provider/recipe_provider.dart';
 import 'package:recet_book/screen/home_screen.dart';
 import 'package:recet_book/config/app_colors.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(
+  ChangeNotifierProvider(create: (_) => RecipeProvider(), child: const MyApp()),
+);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -42,7 +46,12 @@ class RecipeBook extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(children: [HomeScreen(), Center(child: Text('Favorites'))]),
+        body: TabBarView(
+          children: [
+            HomeScreen(),
+            Center(child: Text('Favorites')),
+          ],
+        ),
       ),
     );
   }

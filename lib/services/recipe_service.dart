@@ -1,105 +1,66 @@
 import 'package:recet_book/services/http_service.dart';
 import 'package:recet_book/models/recipe.dart';
 
-class RecipeService {
+abstract class MealBaseService<T> {
   final HttpService _httpService = HttpService();
 
-  /// Obtener recetas argentinas de TheMealDB
-  /// API: https://www.themealdb.com/api/json/v1/1/filter.php?a=argentinian
-  Future<List<Recipe>> getArgentinianRecipes() async {
+  /// URL que será definida por cada clase hija mediante override.
+  String get url;
+
+  /// Método principal que ejecuta la petición HTTP y procesa la lista.
+  Future<List<T>> execute() async {
     try {
-      final result = await _httpService.get(
-        'https://www.themealdb.com/api/json/v1/1/filter.php?a=argentinian',
-      );
+      final result = await _httpService.get(url);
 
       if (result['success']) {
         final data = result['data'] as Map<String, dynamic>;
-        final meals = data['meals'] as List;
-        
-        return meals.map((meal) {
-          return Recipe(
-            id: int.parse(meal['idMeal'] ?? '0'),
-            nombre: meal['strMeal'] ?? 'Sin nombre',
-            creadora: 'TheMealDB',
-            imagen: meal['strMealThumb'] ?? '',
-          );
-        }).toList();
+        final meals = data['meals'] as List? ?? [];
+
+        return meals.map((meal) => transform(meal)).cast<T>().toList();
       } else {
         throw Exception('Error: ${result['error']}');
       }
     } catch (e) {
-      throw Exception('Error al cargar recetas: $e');
+      throw Exception('Error al cargar datos: $e');
     }
+  }
+
+  /// Método que debe sobrescribir el hijo para decidir cómo se mapea cada item.
+  T transform(dynamic meal);
+}
+
+/// Child 1: Servicio para obtener recetas argentinas.
+/// Sobrescribe la URL y el proceso de mapeo a clase Recipe.
+class ArgentinianRecipeService extends MealBaseService<Recipe> {
+  @override
+  String get url =>
+      'https://www.themealdb.com/api/json/v1/1/filter.php?a=argentinian';
+
+  @override
+  Recipe transform(dynamic meal) {
+    return Recipe(
+      id: int.parse(meal['idMeal'] ?? '0'),
+      nombre: meal['strMeal'] ?? 'Sin nombre',
+      creadora: 'TheMealDB',
+      imagen: meal['strMealThumb'] ?? '',
+      isManual: false,
+    );
   }
 }
 
-// Main temporal para pruebas
-// void main() async {
-//   final recipeService = RecipeService();
-  
-//   try {
-//     final recipes = await recipeService.getArgentinianRecipes();
-//     print('✅ Recetas obtenidas: ${recipes.length}');
-//     for (var recipe in recipes) {
-//       print('- ${recipe.nombre}');
-//     }
-//   } catch (e) {
-//     print('❌ Error: $e');
-//   }
-// }
+/// Child 2: Servicio para obtener detalles de comida por nombre.
+/// Sobrescribe la URL y devuelve los items de forma dinámica.
+class MealDetailService extends MealBaseService<dynamic> {
+  final String name;
 
-  // /// Obtener recetas por categoría
-  // /// [category] - La categoría (ej: 'Seafood', 'Vegetarian', etc.)
-  // Future<List<Recipe>> getRecipesByCategory(String category) async {
-  //   try {
-  //     final result = await _httpService.get(
-  //       'https://www.themealdb.com/api/json/v1/1/filter.php?c=$category',
-  //     );
+  MealDetailService(this.name);
 
-  //     if (result['success']) {
-  //       final data = result['data'] as Map<String, dynamic>;
-  //       final meals = data['meals'] as List;
-        
-  //       return meals.map((meal) {
-  //         return Recipe(
-  //           id: meal['idMeal'] ?? '',
-  //           nombre: meal['strMeal'] ?? 'Sin nombre',
-  //           creadora: 'TheMealDB',
-  //           imagen: meal['strMealThumb'] ?? '',
-  //         );
-  //       }).toList();
-  //     } else {
-  //       throw Exception('Error: ${result['error']}');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Error al cargar recetas: $e');
-  //   }
-  // }
+  @override
+  String get url =>
+      'https://www.themealdb.com/api/json/v1/1/search.php?s=$name';
 
-  // /// Obtener recetas por área/país
-  // /// [area] - El área/país (ej: 'Italian', 'Mexican', 'American', etc.)
-  // Future<List<Recipe>> getRecipesByArea(String area) async {
-  //   try {
-  //     final result = await _httpService.get(
-  //       'https://www.themealdb.com/api/json/v1/1/filter.php?a=$area',
-  //     );
-
-  //     if (result['success']) {
-  //       final data = result['data'] as Map<String, dynamic>;
-  //       final meals = data['meals'] as List;
-        
-  //       return meals.map((meal) {
-  //         return Recipe(
-  //           id: meal['idMeal'] ?? '',
-  //           nombre: meal['strMeal'] ?? 'Sin nombre',
-  //           creadora: 'TheMealDB',
-  //           imagen: meal['strMealThumb'] ?? '',
-  //         );
-  //       }).toList();
-  //     } else {
-  //       throw Exception('Error: ${result['error']}');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Error al cargar recetas: $e');
-  //   }
-  // }
+  @override
+  dynamic transform(dynamic meal) {
+    return meal;
+  }
+}

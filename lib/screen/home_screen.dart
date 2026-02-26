@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:recet_book/models/recipe.dart';
 import 'package:recet_book/config/app_colors.dart';
-import 'package:recet_book/services/recipe_service.dart';
+import 'package:recet_book/provider/recipe_provider.dart';
+import 'package:recet_book/screen/home_widgets/recipe_card.dart';
+import 'package:recet_book/screen/home_widgets/recipe_form.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,113 +13,65 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-//useEffect = ciclo de vida del componente
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<List<Recipe>> _recipes;
-  final RecipeService _recipeService = RecipeService();
-
   @override
   void initState() {
     super.initState();
-    _recipes = _loadRecipes();
-  }
-
-  Future<List<Recipe>> _loadRecipes() async {
-    return _recipeService.getArgentinianRecipes();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<RecipeProvider>().fetchRecipes();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
-      body: FutureBuilder<List<Recipe>>(
-        future: _recipes,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: Consumer<RecipeProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          }
+
+          if (provider.error != null) {
+            return Center(child: Text('Error: ${provider.error}'));
+          }
+
+          if (provider.recipes.isEmpty) {
             return const Center(child: Text('No recipes found'));
           }
 
-          final recipes = snapshot.data!;
-          
-          // Activar scroll si hay más de 4 recetas
-          if (recipes.length > 4) {
-            return ListView.builder(
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: recipes.length,
-              itemBuilder: (context, index) {
-                return _RecipesCard(context, recipes[index]);
-              },
-            );
-          } else {
-            return ListView(
-              children: recipes
-                  .map((recipe) => _RecipesCard(context, recipe))
-                  .toList(),
-            );
+          return ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: provider.recipes.length,
+            itemBuilder: (context, index) {
+              return RecipeCard(recipe: provider.recipes[index]);
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.add, color: AppColors.white),
+        onPressed: () async {
+          final newRecipe = await _showBottom(context);
+          if (newRecipe != null && mounted) {
+            context.read<RecipeProvider>().addRecipe(newRecipe);
           }
         },
       ),
     );
   }
-}
 
-Widget _RecipesCard(BuildContext context, Recipe recipe) {
-  return Container(
-    padding: const EdgeInsets.all(8.0),
-    child: Container(
-      width: MediaQuery.of(context).size.width,
-      height: 125,
-      child: Card(
-        child: Row(
-          children: <Widget>[
-            Container(
-              width: 125,
-              height: 100,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Image.network(
-                recipe.imagen,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(
-                    child: Icon(Icons.broken_image, color: Colors.white),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(width: 26),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    recipe.nombre,
-                    style: const TextStyle(fontSize: 18, fontFamily: 'Roboto'),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 6),
-                  Container(width: 100, height: 2, color: AppColors.secondary),
-                  Text(
-                    recipe.creadora,
-                    style: const TextStyle(fontSize: 14, fontFamily: 'Roboto'),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 6),
-                ],
-              ),
-            ),
-          ],
-        ),
+  Future<Recipe?> _showBottom(BuildContext context) {
+    return showModalBottomSheet<Recipe>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.7,
+        color: AppColors.primary,
+        child: const RecipeForm(),
       ),
-    ),
-  );
+    );
+  }
 }
