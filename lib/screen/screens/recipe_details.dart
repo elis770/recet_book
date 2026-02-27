@@ -3,20 +3,59 @@ import 'package:provider/provider.dart';
 import 'package:recet_book/config/app_colors.dart';
 import 'package:recet_book/models/recipe.dart';
 import 'package:recet_book/provider/recipe_provider.dart';
-import 'package:recet_book/screen/details_widgets/manual_detail_card.dart';
-import 'package:recet_book/screen/details_widgets/meal_detail_card.dart';
+import 'package:recet_book/screen/widgets/manual_detail_card.dart';
+import 'package:recet_book/screen/widgets/meal_detail_card.dart';
+import 'package:recet_book/l10n/app_localizations.dart';
 
-class RecipeDetails extends StatelessWidget {
+class RecipeDetails extends StatefulWidget {
   final Recipe recipe;
 
   const RecipeDetails({super.key, required this.recipe});
+
+  @override
+  State<RecipeDetails> createState() => _RecipeDetailsState();
+}
+
+class _RecipeDetailsState extends State<RecipeDetails>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _scaleAnimation =
+        Tween<double>(begin: 0.9, end: 1.2).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOut,
+          ),
+        )..addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            _animationController.reverse();
+          } else if (status == AnimationStatus.dismissed) {
+            _animationController.forward();
+          }
+        });
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          recipe.nombre,
+          widget.recipe.nombre,
           style: const TextStyle(color: AppColors.primary),
         ),
         leading: IconButton(
@@ -24,6 +63,32 @@ class RecipeDetails extends StatelessWidget {
           color: AppColors.primary,
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          Consumer<RecipeProvider>(
+            builder: (context, provider, child) {
+              final currentRecipe = provider.recipes.firstWhere(
+                (r) =>
+                    r.id == widget.recipe.id &&
+                    r.nombre == widget.recipe.nombre,
+                orElse: () => widget.recipe,
+              );
+              return IconButton(
+                icon: ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: Icon(
+                    currentRecipe.isFavorite
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color: currentRecipe.isFavorite ? Colors.red : Colors.grey,
+                  ),
+                ),
+                onPressed: () {
+                  provider.toggleFavorite(currentRecipe);
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -32,7 +97,7 @@ class RecipeDetails extends StatelessWidget {
             AspectRatio(
               aspectRatio: 16 / 9,
               child: Image.network(
-                recipe.imagen,
+                widget.recipe.imagen,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return const Center(
@@ -51,7 +116,7 @@ class RecipeDetails extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    recipe.nombre,
+                    widget.recipe.nombre,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -60,7 +125,9 @@ class RecipeDetails extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Por: ${recipe.creadora}',
+                    AppLocalizations.of(
+                      context,
+                    )!.recipeBy(widget.recipe.creadora),
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey[600],
@@ -70,21 +137,21 @@ class RecipeDetails extends StatelessWidget {
                   const SizedBox(height: 20),
                   const Divider(),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Detalles desde TheMealDB',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.detailsFromApi,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: AppColors.primary,
                     ),
                   ),
                   const SizedBox(height: 10),
-                  if (recipe.isManual)
-                    ManualDetailCard(recipe: recipe)
+                  if (widget.recipe.isManual)
+                    ManualDetailCard(recipe: widget.recipe)
                   else
                     FutureBuilder<List<dynamic>?>(
                       future: context.read<RecipeProvider>().fetchMealDetails(
-                        recipe.nombre,
+                        widget.recipe.nombre,
                       ),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
@@ -93,12 +160,12 @@ class RecipeDetails extends StatelessWidget {
                             child: CircularProgressIndicator(),
                           );
                         } else if (snapshot.hasError) {
-                          return const Text(
-                            'Error al cargar detalles de la API',
+                          return Text(
+                            AppLocalizations.of(context)!.errorLoadingDetails,
                           );
                         } else if (!snapshot.hasData || snapshot.data == null) {
-                          return const Text(
-                            'No se encontraron recetas en TheMealDB.',
+                          return Text(
+                            AppLocalizations.of(context)!.noDetailsFound,
                           );
                         }
 

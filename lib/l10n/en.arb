@@ -1,0 +1,45 @@
+{
+  "@@locale": "en",
+  "appTitle": "Argentinian Recipes",
+  "navInicio": "Home",
+  "navFavoritos": "Favorites",
+  "noFavoritesFound": "No favorite recipes yet",
+  "errorMessage": "Error: {error}",
+  "@errorMessage": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "noRecipesFound": "No recipes found",
+  "recipeBy": "By: {creator}",
+  "@recipeBy": {
+    "placeholders": {
+      "creator": { "type": "String" }
+    }
+  },
+  "detailsFromApi": "Details from TheMealDB",
+  "errorLoadingDetails": "Error loading details from API",
+  "noDetailsFound": "No recipes found on TheMealDB.",
+  "labelName": "Name",
+  "errorNameRequired": "Please enter a name",
+  "labelCreator": "Creator",
+  "errorCreatorRequired": "Please enter a creator name",
+  "labelArea": "Area (Country/Region)",
+  "labelInstructions": "Instructions/Details",
+  "errorInstructionsRequired": "Please enter instructions",
+  "labelImageUrl": "Image (url)",
+  "errorImageRequired": "Please enter an image URL",
+  "errorInvalidUrl": "Please enter a valid URL",
+  "formTitle": "Add New Recipe",
+  "btnSubmit": "Submit",
+  "labelAreaWithTitle": "Area: {area}",
+  "@labelAreaWithTitle": {
+    "placeholders": {
+      "area": { "type": "String" }
+    }
+  },
+  "labelInstructionsTitle": "Instructions:",
+  "noName": "No name",
+  "unknown": "Unknown",
+  "noInstructions": "No instructions"
+}

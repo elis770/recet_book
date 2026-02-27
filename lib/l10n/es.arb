@@ -1,0 +1,45 @@
+{
+  "@@locale": "es",
+  "appTitle": "Recetas Argentinas",
+  "navInicio": "Inicio",
+  "navFavoritos": "Favoritos",
+  "noFavoritesFound": "No tienes recetas favoritas aún",
+  "errorMessage": "Error: {error}",
+  "@errorMessage": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "noRecipesFound": "No se encontraron recetas",
+  "recipeBy": "Por: {creator}",
+  "@recipeBy": {
+    "placeholders": {
+      "creator": { "type": "String" }
+    }
+  },
+  "detailsFromApi": "Detalles desde TheMealDB",
+  "errorLoadingDetails": "Error al cargar detalles de la API",
+  "noDetailsFound": "No se encontraron recetas en TheMealDB.",
+  "labelName": "Nombre",
+  "errorNameRequired": "Por favor ingresa un nombre",
+  "labelCreator": "Creadora",
+  "errorCreatorRequired": "Por favor ingresa el nombre de la creadora",
+  "labelArea": "Área (País/Región)",
+  "labelInstructions": "Instrucciones/Detalles",
+  "errorInstructionsRequired": "Por favor ingresa las instrucciones",
+  "labelImageUrl": "Imagen (url)",
+  "errorImageRequired": "Por favor ingresa una URL de imagen",
+  "errorInvalidUrl": "Por favor ingresa una URL válida",
+  "formTitle": "Añadir Nueva Receta",
+  "btnSubmit": "Enviar",
+  "labelAreaWithTitle": "Área: {area}",
+  "@labelAreaWithTitle": {
+    "placeholders": {
+      "area": { "type": "String" }
+    }
+  },
+  "labelInstructionsTitle": "Instrucciones:",
+  "noName": "Sin nombre",
+  "unknown": "Desconocida",
+  "noInstructions": "Sin instrucciones"
+}

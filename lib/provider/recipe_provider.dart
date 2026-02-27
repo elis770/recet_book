@@ -14,6 +14,8 @@ class RecipeProvider extends ChangeNotifier {
   List<Recipe> get recipes => _recipes;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  List<Recipe> get favoriteRecipes =>
+      _recipes.where((r) => r.isFavorite).toList();
 
   Future<void> fetchRecipes() async {
     _isLoading = true;
@@ -23,7 +25,21 @@ class RecipeProvider extends ChangeNotifier {
     try {
       // Ejecutamos el servicio heredado
       final apiRecipes = await _argentinianService.execute();
-      _recipes = apiRecipes;
+
+      // Guardamos las recetas manuales actuales para no perderlas
+      final manualRecipes = _recipes.where((r) => r.isManual).toList();
+
+      // Preservamos los favoritos locales si la receta ya existía
+      final updatedApiRecipes = apiRecipes.map((newRecipe) {
+        final existing = _recipes.firstWhere(
+          (r) => r.id == newRecipe.id && r.nombre == newRecipe.nombre,
+          orElse: () => newRecipe,
+        );
+        return newRecipe.copyWith(isFavorite: existing.isFavorite);
+      }).toList();
+
+      // Combinamos manuales (al principio) con las de la API
+      _recipes = [...manualRecipes, ...updatedApiRecipes];
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -40,5 +56,17 @@ class RecipeProvider extends ChangeNotifier {
   void addRecipe(Recipe recipe) {
     _recipes.insert(0, recipe);
     notifyListeners();
+  }
+
+  void toggleFavorite(Recipe recipe) {
+    final index = _recipes.indexWhere(
+      (r) => r.id == recipe.id && r.nombre == recipe.nombre,
+    );
+    if (index != -1) {
+      _recipes[index] = _recipes[index].copyWith(
+        isFavorite: !_recipes[index].isFavorite,
+      );
+      notifyListeners();
+    }
   }
 }

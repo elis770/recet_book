@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recet_book/provider/recipe_provider.dart';
-import 'package:recet_book/screen/home_screen.dart';
 import 'package:recet_book/config/app_colors.dart';
+import 'package:recet_book/screen/screens/main_screen.dart';
+
+import 'package:recet_book/l10n/app_localizations.dart';
+
+import 'package:recet_book/provider/locale_provider.dart';
 
 void main() => runApp(
-  ChangeNotifierProvider(create: (_) => RecipeProvider(), child: const MyApp()),
+  MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => RecipeProvider()),
+      ChangeNotifierProvider(create: (_) => LocaleProvider()),
+    ],
+    child: const MyApp(),
+  ),
 );
 
 class MyApp extends StatelessWidget {
@@ -13,46 +23,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    final localeProvider = context.watch<LocaleProvider>();
+
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Recife App',
-      home: RecipeBook(),
-    );
-  }
-}
-
-class RecipeBook extends StatelessWidget {
-  const RecipeBook({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: AppColors.primary,
-          title: const Text(
-            'Recetas 100% Argentinas',
-            style: TextStyle(color: AppColors.white),
-          ),
-          bottom: TabBar(
-            indicatorColor: AppColors.secondary,
-            labelColor: AppColors.secondary,
-            unselectedLabelColor: AppColors.white,
-            tabs: const [
-              Tab(icon: Icon(Icons.home), text: 'Home'),
-              Tab(icon: Icon(Icons.favorite), text: 'Favorites'),
-            ],
-          ),
-        ),
-        body: TabBarView(
-          children: [
-            HomeScreen(),
-            Center(child: Text('Favorites')),
-          ],
-        ),
-      ),
+      theme: ThemeData(fontFamily: AppColors.fontFamily),
+      locale: localeProvider.locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: const MainScreen(),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recet_book/config/app_colors.dart';
+import 'package:recet_book/l10n/app_localizations.dart';
 
 class BaseDetailCard extends StatelessWidget {
   final String title;
@@ -34,7 +35,7 @@ class BaseDetailCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Área: $area',
+              AppLocalizations.of(context)!.labelAreaWithTitle(area),
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[700],
@@ -42,9 +43,9 @@ class BaseDetailCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Instrucciones:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Text(
+              AppLocalizations.of(context)!.labelInstructionsTitle,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
             Text(

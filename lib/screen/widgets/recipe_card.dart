@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'package:recet_book/models/recipe.dart';
 import 'package:recet_book/config/app_colors.dart';
-import 'package:recet_book/screen/recipe_details.dart';
+import 'package:recet_book/screen/screens/recipe_details.dart';
 
 class RecipeCard extends StatelessWidget {
   final Recipe recipe;
@@ -34,11 +35,6 @@ class RecipeCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(8),
-                    gradient: LinearGradient(
-                      colors: [AppColors.primary, AppColors.secondary],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
@@ -63,7 +59,7 @@ class RecipeCard extends StatelessWidget {
                         recipe.nombre,
                         style: const TextStyle(
                           fontSize: 18,
-                          fontFamily: 'Roboto',
+                          fontFamily: AppColors.fontFamily,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -72,13 +68,14 @@ class RecipeCard extends StatelessWidget {
                       Container(
                         width: 100,
                         height: 2,
-                        color: AppColors.secondary,
+                        color: AppColors.primary,
                       ),
+                      const SizedBox(height: 6),
                       Text(
                         recipe.creadora,
                         style: const TextStyle(
                           fontSize: 14,
-                          fontFamily: 'Roboto',
+                          fontFamily: AppColors.fontFamily,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

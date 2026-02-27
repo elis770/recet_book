@@ -6,6 +6,7 @@ class Recipe {
   final bool isManual;
   final String? detalles;
   final String? area;
+  final bool isFavorite;
 
   Recipe({
     required this.id,
@@ -15,6 +16,7 @@ class Recipe {
     this.isManual = false,
     this.detalles,
     this.area,
+    this.isFavorite = false,
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class Recipe {
       isManual: json['isManual'] ?? false,
       detalles: json['detalles'],
       area: json['area'],
+      isFavorite: json['isFavorite'] ?? false,
     );
   }
 
@@ -38,11 +41,34 @@ class Recipe {
       'isManual': isManual,
       'detalles': detalles,
       'area': area,
+      'isFavorite': isFavorite,
     };
+  }
+
+  Recipe copyWith({
+    int? id,
+    String? nombre,
+    String? creadora,
+    String? imagen,
+    bool? isManual,
+    String? detalles,
+    String? area,
+    bool? isFavorite,
+  }) {
+    return Recipe(
+      id: id ?? this.id,
+      nombre: nombre ?? this.nombre,
+      creadora: creadora ?? this.creadora,
+      imagen: imagen ?? this.imagen,
+      isManual: isManual ?? this.isManual,
+      detalles: detalles ?? this.detalles,
+      area: area ?? this.area,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
   }
 
   @override
   String toString() {
-    return 'Recipe{id: $id, nombre: $nombre, creadora: $creadora, imagen: $imagen, isManual: $isManual, detalles: $detalles, area: $area}';
+    return 'Recipe{id: $id, nombre: $nombre, creadora: $creadora, imagen: $imagen, isManual: $isManual, detalles: $detalles, area: $area, isFavorite: $isFavorite}';
   }
 }
